@@ -1,256 +1,93 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Live Code Editor & Preview</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      background-color: #1e1e1e;
-      color: #fff;
-    }
-
-    /* Top Navigation / Header */
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-      background-color: #252526;
-      border-bottom: 1px solid #3c3c3c;
-    }
-
-    .title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .controls {
-      display: flex;
-      gap: 10px;
-    }
-
-    button {
-      background-color: #0e639c;
-      color: white;
-      border: none;
-      padding: 8px 18px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      font-weight: 600;
-      transition: background-color 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    button:hover {
-      background-color: #1177bb;
-    }
-
-    button.btn-reset {
-      background-color: #3c3c3c;
-    }
-
-    button.btn-reset:hover {
-      background-color: #505050;
-    }
-
-    /* Main Container (Split Screen) */
-    .main-container {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-    }
-
-    .panel {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-
-    .panel-header {
-      background-color: #2d2d2d;
-      padding: 6px 15px;
-      font-size: 0.85rem;
-      color: #cccccc;
-      border-bottom: 1px solid #3c3c3c;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    /* Left Code Editor */
-    textarea {
-      flex: 1;
-      background-color: #1e1e1e;
-      color: #d4d4d4;
-      border: none;
-      padding: 15px;
-      font-family: 'Consolas', 'Courier New', Courier, monospace;
-      font-size: 14px;
-      line-height: 1.5;
-      resize: none;
-      outline: none;
-      tab-size: 2;
-    }
-
-    /* Right Preview Window */
-    .preview-panel {
-      border-left: 1px solid #3c3c3c;
-    }
-
-    iframe {
-      flex: 1;
-      width: 100%;
-      height: 100%;
-      border: none;
-      background-color: #ffffff;
-    }
-
-    /* Responsive for mobile screens */
-    @media (max-width: 768px) {
-      .main-container {
-        flex-direction: column;
-      }
-      .preview-panel {
-        border-left: none;
-        border-top: 1px solid #3c3c3c;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Google Drive Reader</title>
+    <!-- โหลด Google Identity Services Library -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
+    <h2>ดึงไฟล์จาก Google Drive ของคุณ</h2>
+    
+    <button id="login-btn" onclick="handleAuth()">เข้าสู่ระบบด้วย Google</button>
+    <button id="logout-btn" onclick="handleLogout()" style="display:none;">ออกจากระบบ</button>
 
-  <header>
-    <div class="title">
-      💻 Web Code Playground
-    </div>
-    <div class="controls">
-      <button onclick="resetCode()" class="btn-reset">↺ รีเซ็ต (Reset)</button>
-      <button onclick="runCode()">▶ รันโค้ด (Run)</button>
-    </div>
-  </header>
+    <h3>รายการไฟล์ของคุณ:</h3>
+    <ul id="file-list"></ul>
 
-  <div class="main-container">
-    <!-- ฝั่งซ้าย: สำหรับพิมพ์/แสดงโค้ด -->
-    <div class="panel">
-      <div class="panel-header">
-        <span>Source Code (HTML / CSS / JS)</span>
-      </div>
-      <textarea id="code-input" spellcheck="false" placeholder="พิมพ์โค้ด HTML/CSS/JS ที่นี่..."></textarea>
-    </div>
+    <script>
+        // 1. ใส่ Client ID ของคุณที่ได้จาก Google Cloud Console
+        const CLIENT_ID = 'YOUR_CLIENT_ID.apps.googleusercontent.com';
+        
+        // 2. กำหนด Scope (สิทธิ์เข้าถึง) 
+        // แนะนำใช้ drive.readonly เพื่ออ่านข้อมูลอย่างเดียว (ปลอดภัยที่สุด)
+        const SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
 
-    <!-- ฝั่งขวา: แสดงตัวอย่างเว็บไซต์ -->
-    <div class="panel preview-panel">
-      <div class="panel-header">
-        <span>Live Preview</span>
-      </div>
-      <iframe id="preview-frame"></iframe>
-    </div>
-  </div>
+        let tokenClient;
+        let accessToken = null;
 
-  <script>
-    // โค้ดตัวอย่างเริ่มต้น
-    const defaultCode = `<!DOCTYPE html>
-<html>
-<head>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-    .card {
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      padding: 30px;
-      border-radius: 15px;
-      text-align: center;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-    }
-    h1 { margin-top: 0; }
-    button {
-      padding: 10px 20px;
-      margin-top: 15px;
-      border: none;
-      border-radius: 5px;
-      background-color: #fff;
-      color: #764ba2;
-      font-weight: bold;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    button:hover {
-      transform: scale(1.05);
-    }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <h1>Hello World! 👋</h1>
-    <p>นี่คือตัวอย่างเว็บไซต์ที่แสดงผลแบบ Real-time</p>
-    <button onclick="alert('สวัสดี! โค้ด JavaScript ทำงานแล้ว')">คลิกทดสอบ JavaScript</button>
-  </div>
-</body>
-</html>`;
+        // เริ่มต้นการใช้งาน Google Auth Client
+        window.onload = function() {
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES,
+                callback: (tokenResponse) => {
+                    if (tokenResponse && tokenResponse.access_token) {
+                        accessToken = tokenResponse.access_token;
+                        document.getElementById('login-btn').style.display = 'none';
+                        document.getElementById('logout-btn').style.display = 'inline-block';
+                        // เมื่อได้ Token แล้ว ให้ไปดึงไฟล์จาก Drive
+                        fetchDriveFiles();
+                    }
+                },
+            });
+        };
 
-    const codeInput = document.getElementById('code-input');
-    const previewFrame = document.getElementById('preview-frame');
+        // กดปุ่ม Login
+        function handleAuth() {
+            // ขอ Access Token จากผู้ใช้
+            tokenClient.requestAccessToken();
+        }
 
-    // ใส่โค้ดเริ่มต้นในช่องพิมพ์
-    codeInput.value = defaultCode;
+        // กดปุ่ม Logout
+        function handleLogout() {
+            if (accessToken) {
+                google.accounts.oauth2.revoke(accessToken, () => {
+                    accessToken = null;
+                    document.getElementById('file-list').innerHTML = '';
+                    document.getElementById('login-btn').style.display = 'inline-block';
+                    document.getElementById('logout-btn').style.display = 'none';
+                    alert('ออกจากระบบเรียบร้อย');
+                });
+            }
+        }
 
-    // ฟังก์ชันสั่งรันโค้ดลงใน iframe
-    function runCode() {
-      const code = codeInput.value;
-      previewFrame.srcdoc = code;
-    }
+        // ดึงข้อมูลไฟล์จาก Google Drive API
+        function fetchDriveFiles() {
+            fetch('https://www.googleapis.com/drive/v3/files?pageSize=15&fields=files(id, name, mimeType, webViewLink)', {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const fileList = document.getElementById('file-list');
+                fileList.innerHTML = '';
 
-    // ฟังก์ชันรีเซ็ตโค้ด
-    function resetCode() {
-      if (confirm('คุณต้องการรีเซ็ตโค้ดกลับเป็นค่าเริ่มต้นหรือไม่?')) {
-        codeInput.value = defaultCode;
-        runCode();
-      }
-    }
-
-    // ช่วยจัดการการกดปุ่ม Tab ใน Textarea ไม่ให้หลุดออกจากช่อง
-    codeInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        const start = this.selectionStart;
-        const end = this.selectionEnd;
-
-        // แทรกช่องว่าง 2 ช่องแทนการกด Tab
-        this.value = this.value.substring(0, start) + "  " + this.value.substring(end);
-        this.selectionStart = this.selectionEnd = start + 2;
-      }
-    });
-
-    // รันโค้ดทันทีเมื่อโหลดหน้าเว็บครั้งแรก
-    runCode();
-  </script>
+                if (data.files && data.files.length > 0) {
+                    data.files.forEach(file => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<a href="${file.webViewLink}" target="_blank">${file.name}</a> (${file.mimeType})`;
+                        fileList.appendChild(li);
+                    });
+                } else {
+                    fileList.innerHTML = '<li>ไม่พบไฟล์ใน Google Drive ของคุณ</li>';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching files:', error);
+            });
+        }
+    </script>
 </body>
 </html>
