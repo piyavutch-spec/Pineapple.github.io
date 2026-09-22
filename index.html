@@ -1,475 +1,439 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Live Code Editor & Preview</title>
-  
-  <!-- โหลด Google Identity Services API (ฟรี 100%) -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    <title>โรงพยาบาลตัวอย่าง | โรงพยาบาลของรัฐ</title>
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      background-color: #1e1e1e;
-      color: #fff;
-    }
+    <meta name="description"
+          content="เว็บไซต์โรงพยาบาลตัวอย่าง ให้บริการข้อมูลข่าวสาร บริการสุขภาพ และข้อมูลสำหรับประชาชน">
 
-    /* Header */
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-      background-color: #252526;
-      border-bottom: 1px solid #3c3c3c;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .controls {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    button {
-      background-color: #0e639c;
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      font-weight: 600;
-      transition: background-color 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    button:hover {
-      background-color: #1177bb;
-    }
-
-    button.btn-reset {
-      background-color: #3c3c3c;
-    }
-
-    button.btn-reset:hover {
-      background-color: #505050;
-    }
-
-    button.btn-google {
-      background-color: #4285f4;
-    }
-
-    button.btn-google:hover {
-      background-color: #357ae8;
-    }
-
-    button.btn-drive {
-      background-color: #0f9d58;
-    }
-
-    button.btn-drive:hover {
-      background-color: #0b8043;
-    }
-
-    /* Main Container */
-    .main-container {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-    }
-
-    .panel {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-
-    .panel-header {
-      background-color: #2d2d2d;
-      padding: 6px 15px;
-      font-size: 0.85rem;
-      color: #cccccc;
-      border-bottom: 1px solid #3c3c3c;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    /* Left Code Editor */
-    textarea {
-      flex: 1;
-      background-color: #1e1e1e;
-      color: #d4d4d4;
-      border: none;
-      padding: 15px;
-      font-family: 'Consolas', 'Courier New', Courier, monospace;
-      font-size: 14px;
-      line-height: 1.5;
-      resize: none;
-      outline: none;
-      tab-size: 2;
-    }
-
-    /* Right Preview Window */
-    .preview-panel {
-      border-left: 1px solid #3c3c3c;
-    }
-
-    iframe {
-      flex: 1;
-      width: 100%;
-      height: 100%;
-      border: none;
-      background-color: #ffffff;
-    }
-
-    /* Modal หน้าต่างเลือกไฟล์จาก Drive */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .modal-box {
-      background-color: #252526;
-      padding: 20px;
-      border-radius: 8px;
-      width: 90%;
-      max-width: 450px;
-      border: 1px solid #3c3c3c;
-    }
-
-    .modal-box h3 {
-      margin-bottom: 15px;
-      font-size: 1.1rem;
-    }
-
-    .file-list {
-      list-style: none;
-      max-height: 250px;
-      overflow-y: auto;
-      margin-bottom: 15px;
-      border: 1px solid #3c3c3c;
-      border-radius: 4px;
-    }
-
-    .file-list li {
-      padding: 10px 15px;
-      border-bottom: 1px solid #3c3c3c;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .file-list li:hover {
-      background-color: #04395e;
-    }
-
-    @media (max-width: 768px) {
-      .main-container {
-        flex-direction: column;
-      }
-      .preview-panel {
-        border-left: none;
-        border-top: 1px solid #3c3c3c;
-      }
-    }
-  </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
-  <header>
-    <div class="title">
-      💻 Web Code Playground
+<!-- ================= HEADER ================= -->
+
+<header class="header">
+
+    <div class="container header-inner">
+
+        <a href="index.html" class="logo">
+
+            <div class="logo-icon">
+                รพ.
+            </div>
+
+            <div class="logo-text">
+                <strong>โรงพยาบาลตัวอย่าง</strong>
+                <span>กระทรวงสาธารณสุข</span>
+            </div>
+
+        </a>
+
+
+        <button class="menu-toggle" id="menuToggle">
+            ☰
+        </button>
+
+
+        <nav class="main-nav" id="mainNav">
+
+            <a href="index.html" class="active">
+                หน้าหลัก
+            </a>
+
+            <a href="about/">
+                เกี่ยวกับโรงพยาบาล
+            </a>
+
+            <a href="services/">
+                บริการ
+            </a>
+
+            <a href="news/">
+                ข่าวประชาสัมพันธ์
+            </a>
+
+            <a href="documents/">
+                เอกสาร
+            </a>
+
+            <a href="contact/">
+                ติดต่อเรา
+            </a>
+
+        </nav>
+
     </div>
-    <div class="controls">
-      <!-- ปุ่มระบบ Google Auth & Drive -->
-      <button id="login-btn" onclick="handleAuth()" class="btn-google">🔑 เข้าสู่ระบบ Google</button>
-      <button id="save-btn" onclick="saveToDrive()" class="btn-drive" style="display:none;">💾 บันทึกลง Drive</button>
-      <button id="load-btn" onclick="openFileModal()" class="btn-drive" style="display:none;">📂 เปิดไฟล์จาก Drive</button>
-      <button id="logout-btn" onclick="handleLogout()" class="btn-reset" style="display:none;">🚪 ออกจากระบบ</button>
 
-      <!-- ปุ่มเดิม -->
-      <button onclick="resetCode()" class="btn-reset">↺ รีเซ็ต</button>
-      <button onclick="runCode()">▶ รันโค้ด</button>
+</header>
+
+
+<!-- ================= HERO ================= -->
+
+<section class="hero">
+
+    <div class="container hero-content">
+
+        <div class="hero-text">
+
+            <span class="hero-label">
+                ยินดีต้อนรับ
+            </span>
+
+            <h1>
+                โรงพยาบาลตัวอย่าง
+            </h1>
+
+            <p>
+                มุ่งมั่นให้บริการสุขภาพอย่างมีคุณภาพ
+                ปลอดภัย และใส่ใจประชาชน
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="services/" class="btn btn-primary">
+                    ดูบริการของเรา
+                </a>
+
+                <a href="contact/" class="btn btn-outline">
+                    ติดต่อโรงพยาบาล
+                </a>
+
+            </div>
+
+        </div>
+
     </div>
-  </header>
 
-  <div class="main-container">
-    <div class="panel">
-      <div class="panel-header">Source Code (HTML / CSS / JS)</div>
-      <textarea id="code-input" spellcheck="false" placeholder="พิมพ์โค้ด HTML/CSS/JS ที่นี่..."></textarea>
+</section>
+
+
+<!-- ================= QUICK SERVICES ================= -->
+
+<section class="section">
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <span>
+                SERVICES
+            </span>
+
+            <h2>
+                บริการสำหรับประชาชน
+            </h2>
+
+            <p>
+                ข้อมูลบริการที่ประชาชนสามารถเข้าถึงได้ง่าย
+            </p>
+
+        </div>
+
+
+        <div class="service-grid">
+
+
+            <a href="services/" class="service-card">
+
+                <div class="service-icon">
+                    🏥
+                </div>
+
+                <h3>
+                    บริการทางการแพทย์
+                </h3>
+
+                <p>
+                    ข้อมูลคลินิกและบริการด้านการรักษาพยาบาล
+                </p>
+
+            </a>
+
+
+            <a href="services/" class="service-card">
+
+                <div class="service-icon">
+                    💊
+                </div>
+
+                <h3>
+                    งานเภสัชกรรม
+                </h3>
+
+                <p>
+                    ข้อมูลการรับยา การใช้ยา และบริการเภสัชกรรม
+                </p>
+
+            </a>
+
+
+            <a href="services/" class="service-card">
+
+                <div class="service-icon">
+                    📅
+                </div>
+
+                <h3>
+                    นัดหมายบริการ
+                </h3>
+
+                <p>
+                    ข้อมูลการนัดหมายและการเข้ารับบริการ
+                </p>
+
+            </a>
+
+
+            <a href="documents/" class="service-card">
+
+                <div class="service-icon">
+                    📄
+                </div>
+
+                <h3>
+                    ดาวน์โหลดเอกสาร
+                </h3>
+
+                <p>
+                    แบบฟอร์มและเอกสารสำหรับประชาชน
+                </p>
+
+            </a>
+
+        </div>
+
     </div>
 
-    <div class="panel preview-panel">
-      <div class="panel-header">Live Preview</div>
-      <iframe id="preview-frame"></iframe>
+</section>
+
+
+<!-- ================= NEWS ================= -->
+
+<section class="section section-gray">
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <span>
+                NEWS
+            </span>
+
+            <h2>
+                ข่าวประชาสัมพันธ์
+            </h2>
+
+        </div>
+
+
+        <div class="news-grid">
+
+
+            <article class="news-card">
+
+                <div class="news-date">
+                    22 ก.ย. 2569
+                </div>
+
+                <h3>
+                    ประกาศข่าวประชาสัมพันธ์ของโรงพยาบาล
+                </h3>
+
+                <p>
+                    รายละเอียดข่าวประชาสัมพันธ์
+                    สามารถใส่ข้อความเพิ่มเติมได้ที่นี่
+                </p>
+
+                <a href="news/news-01.html">
+                    อ่านเพิ่มเติม →
+                </a>
+
+            </article>
+
+
+            <article class="news-card">
+
+                <div class="news-date">
+                    20 ก.ย. 2569
+                </div>
+
+                <h3>
+                    ข่าวสารการให้บริการประชาชน
+                </h3>
+
+                <p>
+                    ข้อมูลข่าวสารและการให้บริการ
+                    สำหรับประชาชน
+                </p>
+
+                <a href="news/news-02.html">
+                    อ่านเพิ่มเติม →
+                </a>
+
+            </article>
+
+
+            <article class="news-card">
+
+                <div class="news-date">
+                    18 ก.ย. 2569
+                </div>
+
+                <h3>
+                    กิจกรรมของโรงพยาบาล
+                </h3>
+
+                <p>
+                    ข่าวกิจกรรมและการดำเนินงาน
+                    ของโรงพยาบาล
+                </p>
+
+                <a href="news/news-03.html">
+                    อ่านเพิ่มเติม →
+                </a>
+
+            </article>
+
+        </div>
+
+
+        <div class="center">
+
+            <a href="news/" class="btn btn-primary">
+                ดูข่าวทั้งหมด
+            </a>
+
+        </div>
+
     </div>
-  </div>
 
-  <!-- Popup สำหรับเลือกไฟล์จาก Drive -->
-  <div id="file-modal" class="modal-overlay" style="display:none;">
-    <div class="modal-box">
-      <h3>📂 เลือกไฟล์จาก Google Drive</h3>
-      <ul id="drive-file-list" class="file-list"></ul>
-      <button onclick="closeFileModal()" class="btn-reset" style="width: 100%; justify-content: center;">ยกเลิก</button>
+</section>
+
+
+<!-- ================= ABOUT ================= -->
+
+<section class="section">
+
+    <div class="container about-home">
+
+        <div>
+
+            <span class="section-label">
+                ABOUT US
+            </span>
+
+            <h2>
+                โรงพยาบาลของประชาชน
+            </h2>
+
+            <p>
+                โรงพยาบาลตัวอย่างมุ่งมั่นพัฒนาระบบบริการสุขภาพ
+                เพื่อให้ประชาชนได้รับบริการที่มีคุณภาพ
+                ปลอดภัย และเท่าเทียม
+            </p>
+
+            <a href="about/" class="text-link">
+                อ่านข้อมูลโรงพยาบาล →
+            </a>
+
+        </div>
+
+        <div class="about-box">
+
+            <div>
+                <strong>24</strong>
+                <span>ชั่วโมง</span>
+            </div>
+
+            <div>
+                <strong>365</strong>
+                <span>วัน</span>
+            </div>
+
+        </div>
+
     </div>
-  </div>
 
-  <script>
-    // ==========================================
-    // 🔑 ตั้งค่า CLIENT ID ของคุณตรงนี้
-    // ==========================================
-    const CLIENT_ID = '1038054071398-dbj2ioo6i8fhie12g31oh16u2ac39go0.apps.googleusercontent.com';
-    
-    // กำหนด Scope ใช้ 'drive.file' (ปลอดภัยสูงสุด: อ่าน/เขียนได้เฉพาะไฟล์ที่สร้างด้วยแอปนี้เท่านั้น)
-    const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+</section>
 
-    let tokenClient;
-    let accessToken = null;
 
-    // เริ่มต้น Google Token Client
-    window.onload = function() {
-      if (typeof google !== 'undefined') {
-        tokenClient = google.accounts.oauth2.initTokenClient({
-          client_id: CLIENT_ID,
-          scope: SCOPES,
-          callback: (response) => {
-            if (response.access_token) {
-              accessToken = response.access_token;
-              updateUIOnLogin();
-            }
-          },
-        });
-      }
-      runCode();
-    };
+<!-- ================= FOOTER ================= -->
 
-    // ล็อกอิน
-    function handleAuth() {
-      if (!CLIENT_ID || CLIENT_ID.includes('YOUR_CLIENT_ID')) {
-        alert('กรุณาใส่ Client ID ในโค้ดก่อนใช้งานครับ');
-        return;
-      }
-      tokenClient.requestAccessToken();
-    }
+<footer class="footer">
 
-    // ล็อกเอาต์
-    function handleLogout() {
-      if (accessToken) {
-        google.accounts.oauth2.revoke(accessToken, () => {
-          accessToken = null;
-          updateUIOnLogout();
-        });
-      }
-    }
+    <div class="container footer-grid">
 
-    // อัปเดตการแสดงผลปุ่มเมื่อล็อกอิน/ล็อกเอาต์
-    function updateUIOnLogin() {
-      document.getElementById('login-btn').style.display = 'none';
-      document.getElementById('save-btn').style.display = 'inline-flex';
-      document.getElementById('load-btn').style.display = 'inline-flex';
-      document.getElementById('logout-btn').style.display = 'inline-flex';
-    }
+        <div>
 
-    function updateUIOnLogout() {
-      document.getElementById('login-btn').style.display = 'inline-flex';
-      document.getElementById('save-btn').style.display = 'none';
-      document.getElementById('load-btn').style.display = 'none';
-      document.getElementById('logout-btn').style.display = 'none';
-    }
+            <h3>
+                โรงพยาบาลตัวอย่าง
+            </h3>
 
-    // 💾 บันทึกโค้ดลง Google Drive
-    async function saveToDrive() {
-      if (!accessToken) return alert('กรุณาเข้าสู่ระบบก่อนครับ');
+            <p>
+                โรงพยาบาลของรัฐ
+                กระทรวงสาธารณสุข
+            </p>
 
-      const code = codeInput.value;
-      let fileName = prompt('ตั้งชื่อไฟล์สำหรับบันทึก:', 'my-playground.html');
-      if (!fileName) return;
-      if (!fileName.endsWith('.html')) fileName += '.html';
+        </div>
 
-      const metadata = {
-        name: fileName,
-        mimeType: 'text/html'
-      };
 
-      const form = new FormData();
-      form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-      form.append('file', new Blob([code], { type: 'text/html' }));
+        <div>
 
-      try {
-        const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${accessToken}` },
-          body: form
-        });
-        const data = await res.json();
-        if (data.id) {
-          alert('บันทึกไฟล์ลง Google Drive ของคุณเรียบร้อยแล้ว!');
-        } else {
-          alert('เกิดข้อผิดพลาดในการบันทึก');
-        }
-      } catch (err) {
-        console.error(err);
-        alert('เกิดข้อผิดพลาดในการเชื่อมต่อกับ Google Drive');
-      }
-    }
+            <h4>
+                เมนู
+            </h4>
 
-    // 📂 ดึงรายการไฟล์ใน Drive มาแสดงใน Modal
-    async function openFileModal() {
-      if (!accessToken) return alert('กรุณาเข้าสู่ระบบก่อนครับ');
-      
-      const fileListEl = document.getElementById('drive-file-list');
-      fileListEl.innerHTML = '<li style="cursor:default;">กำลังโหลดไฟล์...</li>';
-      document.getElementById('file-modal').style.display = 'flex';
+            <a href="about/">
+                เกี่ยวกับเรา
+            </a>
 
-      try {
-        const res = await fetch("https://www.googleapis.com/drive/v3/files?q=trashed=false&fields=files(id, name)", {
-          headers: { 'Authorization': `Bearer ${accessToken}` }
-        });
-        const data = await res.json();
-        fileListEl.innerHTML = '';
+            <a href="services/">
+                บริการ
+            </a>
 
-        if (data.files && data.files.length > 0) {
-          data.files.forEach(file => {
-            const li = document.createElement('li');
-            li.textContent = '📄 ' + file.name;
-            li.onclick = () => loadFileContent(file.id);
-            fileListEl.appendChild(li);
-          });
-        } else {
-          fileListEl.innerHTML = '<li style="cursor:default;">ไม่พบไฟล์ที่เคยบันทึกไว้</li>';
-        }
-      } catch (err) {
-        console.error(err);
-        fileListEl.innerHTML = '<li style="cursor:default;">ดึงรายการไฟล์ไม่สำเร็จ</li>';
-      }
-    }
+            <a href="news/">
+                ข่าวประชาสัมพันธ์
+            </a>
 
-    function closeFileModal() {
-      document.getElementById('file-modal').style.display = 'none';
-    }
+        </div>
 
-    // 📥 อ่านเนื้อหาไฟล์จาก Drive มาใส่ใน Textarea
-    async function loadFileContent(fileId) {
-      try {
-        const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
-          headers: { 'Authorization': `Bearer ${accessToken}` }
-        });
-        const codeText = await res.text();
-        
-        codeInput.value = codeText;
-        runCode(); // รันโค้ดให้อัตโนมัติหลังโหลด
-        closeFileModal();
-        alert('โหลดไฟล์สำเร็จ!');
-      } catch (err) {
-        console.error(err);
-        alert('อ่านไฟล์จาก Driveไม่สำเร็จ');
-      }
-    }
 
-    // ==========================================
-    // โค้ด Playground เดิมของคุณ
-    // ==========================================
-    const defaultCode = `<!DOCTYPE html>
-<html>
-<head>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-    .card {
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      padding: 30px;
-      border-radius: 15px;
-      text-align: center;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-    }
-    h1 { margin-top: 0; }
-    button {
-      padding: 10px 20px;
-      margin-top: 15px;
-      border: none;
-      border-radius: 5px;
-      background-color: #fff;
-      color: #764ba2;
-      font-weight: bold;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    button:hover {
-      transform: scale(1.05);
-    }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <h1>Hello World! 👋</h1>
-    <p>นี่คือตัวอย่างเว็บไซต์ที่แสดงผลแบบ Real-time</p>
-    <button onclick="alert('สวัสดี! โค้ด JavaScript ทำงานแล้ว')">คลิกทดสอบ JavaScript</button>
-  </div>
-</body>
-</html>`;
+        <div>
 
-    const codeInput = document.getElementById('code-input');
-    const previewFrame = document.getElementById('preview-frame');
+            <h4>
+                ติดต่อ
+            </h4>
 
-    codeInput.value = defaultCode;
+            <p>
+                โทร. 000-000-0000
+            </p>
 
-    function runCode() {
-      const code = codeInput.value;
-      previewFrame.srcdoc = code;
-    }
+            <p>
+                Email: hospital@example.go.th
+            </p>
 
-    function resetCode() {
-      if (confirm('คุณต้องการรีเซ็ตโค้ดกลับเป็นค่าเริ่มต้นหรือไม่?')) {
-        codeInput.value = defaultCode;
-        runCode();
-      }
-    }
+        </div>
 
-    codeInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        const start = this.selectionStart;
-        const end = this.selectionEnd;
-        this.value = this.value.substring(0, start) + "  " + this.value.substring(end);
-        this.selectionStart = this.selectionEnd = start + 2;
-      }
-    });
-  </script>
+    </div>
+
+
+    <div class="footer-bottom">
+
+        © 2569 โรงพยาบาลตัวอย่าง
+        สงวนลิขสิทธิ์
+
+    </div>
+
+</footer>
+
+
+<script src="js/script.js"></script>
+
 </body>
 </html>
