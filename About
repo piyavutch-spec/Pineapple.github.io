@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>เกี่ยวกับโรงพยาบาล | โรงพยาบาลตัวอย่าง</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+
+<header class="header">
+
+    <div class="container header-inner">
+
+        <a href="../index.html" class="logo">
+
+            <div class="logo-icon">
+                รพ.
+            </div>
+
+            <div class="logo-text">
+
+                <strong>
+                    โรงพยาบาลตัวอย่าง
+                </strong>
+
+                <span>
+                    กระทรวงสาธารณสุข
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <button class="menu-toggle" id="menuToggle">
+            ☰
+        </button>
+
+
+        <nav class="main-nav" id="mainNav">
+
+            <a href="../index.html">
+                หน้าหลัก
+            </a>
+
+            <a href="../about/" class="active">
+                เกี่ยวกับโรงพยาบาล
+            </a>
+
+            <a href="../services/">
+                บริการ
+            </a>
+
+            <a href="../news/">
+                ข่าวประชาสัมพันธ์
+            </a>
+
+            <a href="../documents/">
+                เอกสาร
+            </a>
+
+            <a href="../contact/">
+                ติดต่อเรา
+            </a>
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+<section class="page-header">
+
+    <div class="container">
+
+        <span>
+            ABOUT US
+        </span>
+
+        <h1>
+            เกี่ยวกับโรงพยาบาล
+        </h1>
+
+        <p>
+            ข้อมูลทั่วไป วิสัยทัศน์ และพันธกิจ
+        </p>
+
+    </div>
+
+</section>
+
+
+<main class="section">
+
+    <div class="container content">
+
+        <h2>
+            ข้อมูลโรงพยาบาล
+        </h2>
+
+        <p>
+            โรงพยาบาลตัวอย่าง เป็นหน่วยบริการสุขภาพ
+            ที่ให้บริการประชาชนในพื้นที่
+            โดยมุ่งเน้นคุณภาพ ความปลอดภัย
+            และการเข้าถึงบริการสุขภาพอย่างเท่าเทียม
+        </p>
+
+
+        <h2>
+            วิสัยทัศน์
+        </h2>
+
+        <div class="highlight-box">
+
+            เป็นองค์กรสุขภาพที่มีคุณภาพ
+            ประชาชนได้รับบริการอย่างปลอดภัย
+            และบุคลากรมีความสุข
+
+        </div>
+
+
+        <h2>
+            พันธกิจ
+        </h2>
+
+        <ul>
+
+            <li>
+                ให้บริการสุขภาพอย่างมีคุณภาพและปลอดภัย
+            </li>
+
+            <li>
+                ส่งเสริมสุขภาพและป้องกันโรค
+            </li>
+
+            <li>
+                พัฒนาระบบบริการให้ประชาชนเข้าถึงได้ง่าย
+            </li>
+
+            <li>
+                พัฒนาศักยภาพบุคลากรอย่างต่อเนื่อง
+            </li>
+
+        </ul>
+
+    </div>
+
+</main>
+
+
+<footer class="footer">
+
+    <div class="container footer-grid">
+
+        <div>
+
+            <h3>
+                โรงพยาบาลตัวอย่าง
+            </h3>
+
+            <p>
+                โรงพยาบาลของรัฐ
+                กระทรวงสาธารณสุข
+            </p>
+
+        </div>
+
+        <div>
+
+            <h4>
+                ติดต่อ
+            </h4>
+
+            <p>
+                โทร. 000-000-0000
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        © 2569 โรงพยาบาลตัวอย่าง
+
+    </div>
+
+</footer>
+
+
+<script src="../js/script.js"></script>
+
+</body>
+</html>
